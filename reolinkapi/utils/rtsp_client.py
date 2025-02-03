@@ -1,7 +1,9 @@
 import os
 from threading import ThreadError
 from typing import Any
+
 import cv2
+
 from reolinkapi.utils.util import threaded
 
 
@@ -15,7 +17,7 @@ class RtspClient:
     """
 
     def __init__(self, ip: str, username: str, password: str, port: float = 554, profile: str = "main",
-                 use_udp: bool = True, callback: Any = None, **kwargs):
+                 use_udp: bool = True, callback: Any = None, channel: int = 0, **kwargs):
         """
         RTSP client is used to retrieve frames from the camera in a stream
 
@@ -37,7 +39,7 @@ class RtspClient:
         self.password = password
         self.port = port
         self.proxy = kwargs.get("proxies")
-        self.url = f'rtsp://{self.username}:{self.password}@{self.ip}:{self.port}//h264Preview_01_{profile}'
+        self.url = f'rtsp://{self.username}:{self.password}@{self.ip}:{self.port}//h264Preview_{channel:02d}_{profile}'
         capture_options += 'udp' if use_udp else 'tcp'
 
         os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = capture_options

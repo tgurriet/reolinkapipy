@@ -1,13 +1,14 @@
 import string
+from io import BytesIO
 from random import choices
 from typing import Any, Optional
 from urllib import parse
-from io import BytesIO
 
 import requests
 
 try:
-    from PIL.Image import Image, open as open_image
+    from PIL.Image import Image
+    from PIL.Image import open as open_image
 
     from reolinkapi.utils.rtsp_client import RtspClient
 
@@ -15,7 +16,7 @@ try:
     class StreamAPIMixin:
         """ API calls for opening a video stream or capturing an image from the camera."""
 
-        def open_video_stream(self, callback: Any = None, proxies: Any = None) -> Any:
+        def open_video_stream(self, callback: Any = None, proxies: Any = None, channel: int = 0) -> Any:
             """
             'https://support.reolink.com/hc/en-us/articles/360007010473-How-to-Live-View-Reolink-Cameras-via-VLC-Media-Player'
             Blocking function creates a generator and returns the frames as it is spawned
@@ -23,7 +24,7 @@ try:
             :param proxies: Default is none, example: {"host": "localhost", "port": 8000}
             """
             rtsp_client = RtspClient(
-                ip=self.ip, username=self.username, password=self.password, profile=self.profile, proxies=proxies, callback=callback)
+                ip=self.ip, username=self.username, password=self.password, profile=self.profile, proxies=proxies, callback=callback, channel=channel)
             return rtsp_client.open_stream()
 
         def get_snap(self, timeout: float = 3, proxies: Any = None) -> Optional[Image]:
@@ -58,7 +59,7 @@ except ImportError as err:
     class StreamAPIMixin:
         """ API calls for opening a video stream or capturing an image from the camera."""
 
-        def open_video_stream(self, callback: Any = None, proxies: Any = None) -> Any:
+        def open_video_stream(self, callback: Any = None, proxies: Any = None, channel: int = 0) -> Any:
             raise ImportError(f'open_video_stream requires streaming extra dependencies\nFor instance "pip install '
                               f'reolinkapi[streaming]"')
 
